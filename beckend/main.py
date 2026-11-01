@@ -15,7 +15,11 @@ def show_skins():
         CACHE_FILE.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
         print("zapisano do pliku")
 
-    return data[:20]
+    # return data[:20]
+    names = [items["market_hash_name"] for items in data]
+    return names[:50]
+
+
 
 
 
