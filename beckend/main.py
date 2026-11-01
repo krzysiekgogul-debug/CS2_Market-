@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from search_skins import fetch_items
 import json
 from pathlib import Path
-CACHE_FILE = Path("../items.json")
+CACHE_FILE = Path("items.json")
 app = FastAPI()
 
 @app.get("/skins")

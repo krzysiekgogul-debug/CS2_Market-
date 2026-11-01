@@ -6,7 +6,7 @@ import httpx
 URL = "https://api.skinport.com/v1/items"
 PARAMS = {"app_id": 730, "currency": "PLN", "tradable": False}
 HEADERS = {"Accept-Encoding": "br"}
-CACHE_FILE = Path("../items.json")
+CACHE_FILE = Path("items.json")
 
 
 def fetch_items():
