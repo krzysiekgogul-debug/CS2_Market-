@@ -1,9 +1,13 @@
-from fastapi import FastAPI
-from search_skins import fetch_items
 import json
 from pathlib import Path
+
+from fastapi import FastAPI
+
+from search_skins import fetch_items
+
 CACHE_FILE = Path("items.json")
 app = FastAPI()
+
 
 @app.get("/skins")
 def show_skins():
@@ -18,16 +22,6 @@ def show_skins():
     # return data[:20]
     names = [items["market_hash_name"] for items in data]
     return names[:50]
-
-
-
-
-
-
-
-
-
-
 
 
 # http://localhost:8000

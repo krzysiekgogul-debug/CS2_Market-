@@ -1,7 +1,7 @@
 # from fastapi import FastAPI
 from pathlib import Path
-import httpx
 
+import httpx
 
 URL = "https://api.skinport.com/v1/items"
 PARAMS = {"app_id": 730, "currency": "PLN", "tradable": False}
@@ -21,9 +21,6 @@ def fetch_items():
     return response.json()
 
 
-
-
-
 # import httpx
 #
 # dict_atributes = {'app_id': 730,
@@ -34,5 +31,3 @@ def fetch_items():
 #
 #     data = response.json()
 #     return data
-
-
