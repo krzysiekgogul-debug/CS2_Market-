@@ -1,0 +1,41 @@
+name: CI
+
+# kiedy się uruchamia: przy pushu do main i przy każdym Pull Requeście
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    # GitHub stawia czystą maszynę z Ubuntu
+    runs-on: ubuntu-latest
+
+    # wszystkie polecenia "run" wykonują się w tym folderze
+    # (u Ciebie nazwa musi się zgadzać z folderem w repo, czyli teraz "beckend")
+    defaults:
+      run:
+        working-directory: beckend
+
+    steps:
+      # pobiera kod z repo na maszynę
+      - uses: actions/checkout@v4
+
+      # instaluje Pythona w tej samej wersji, co lokalnie
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: beckend/requirements-dev.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Format check
+        run: ruff format --check .
+
+      - name: Tests
+        run: pytest
