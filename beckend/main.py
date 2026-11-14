@@ -1,10 +1,8 @@
 import json
-from pathlib import Path
 
 from fastapi import FastAPI
 
-from search_skins import fetch_items, CACHE_FILE
-
+from search_skins import CACHE_FILE, fetch_items
 
 app = FastAPI()
 

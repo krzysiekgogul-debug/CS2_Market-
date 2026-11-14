@@ -14,6 +14,7 @@ FAKE_ITEMS = [
 #     response = client.get("/skins")
 #     assert response.status_code == 200
 
+
 def test_skins_returns_fake_data(monkeypatch, tmp_path):
     # 1. cache wskazuje na plik, który jeszcze nie istnieje (tmp_path to
     #    tymczasowy folder, sprzątany po teście), więc kod pójdzie do "else"

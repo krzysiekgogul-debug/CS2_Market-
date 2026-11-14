@@ -21,11 +21,6 @@ def fetch_items():
     return response.json()
 
 
-
-
-
-
-
 # import httpx
 #
 # dict_atributes = {'app_id': 730,
