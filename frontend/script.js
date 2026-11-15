@@ -9,7 +9,7 @@ async function loadItems() {
         if (!response.ok) throw new Error("Nie udało się pobrać danych");
 
         allItems = await response.json();
-        renderItems(allItems);
+        applyFilters();
     } catch (error) {
         container.innerHTML = `<p style="color: #ff6b6b;">Błąd: ${error.message}</p>`;
     }
@@ -20,7 +20,7 @@ function renderItems(items) {
     container.innerHTML = "";
 
     if (items.length === 0) {
-        container.innerHTML = "<p>Brak skinów.</p>";
+        container.innerHTML = "<p>Brak skinów pasujących do wyszukiwania.</p>";
         return;
     }
 
@@ -36,29 +36,33 @@ function renderItems(items) {
     });
 }
 
-function sortItems(criteria) {
-    const sorted = [...allItems];
+function applyFilters() {
+    const searchTerm = document.getElementById("search").value.toLowerCase();
+    const sortCriteria = document.getElementById("sort").value;
 
-    switch (criteria) {
+    let filtered = allItems.filter(item =>
+        item.name.toLowerCase().includes(searchTerm)
+    );
+
+    switch (sortCriteria) {
         case "name-asc":
-            sorted.sort((a, b) => a.name.localeCompare(b.name));
+            filtered.sort((a, b) => a.name.localeCompare(b.name));
             break;
         case "name-desc":
-            sorted.sort((a, b) => b.name.localeCompare(a.name));
+            filtered.sort((a, b) => b.name.localeCompare(a.name));
             break;
         case "price-asc":
-            sorted.sort((a, b) => a.price - b.price);
+            filtered.sort((a, b) => a.price - b.price);
             break;
         case "price-desc":
-            sorted.sort((a, b) => b.price - a.price);
+            filtered.sort((a, b) => b.price - a.price);
             break;
     }
 
-    renderItems(sorted);
+    renderItems(filtered);
 }
 
-document.getElementById("sort").addEventListener("change", (e) => {
-    sortItems(e.target.value);
-});
+document.getElementById("search").addEventListener("input", applyFilters);
+document.getElementById("sort").addEventListener("change", applyFilters);
 
 loadItems();
