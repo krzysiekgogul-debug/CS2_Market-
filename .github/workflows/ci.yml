@@ -15,7 +15,7 @@ jobs:
     # (u Ciebie nazwa musi się zgadzać z folderem w repo, czyli teraz "beckend")
     defaults:
       run:
-        working-directory: beckend
+        working-directory: backend
 
     steps:
       # pobiera kod z repo na maszynę
@@ -26,7 +26,7 @@ jobs:
         with:
           python-version: "3.13"
           cache: pip
-          cache-dependency-path: beckend/requirements-dev.txt
+          cache-dependency-path: backend/requirements-dev.txt
 
       - name: Install dependencies
         run: pip install -r requirements-dev.txt
