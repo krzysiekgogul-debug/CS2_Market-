@@ -28,9 +28,11 @@ function renderItems(items) {
         const card = document.createElement("div");
         card.className = "item-card";
         card.innerHTML = `
-            <h3>${item.name}</h3>
-            <p class="rarity">${item.rarity || "Brak rarity"}</p>
-            <p class="price">$${item.price}</p>
+            <a href="item.html?id=${item.id}" class="card-link">
+                <h3>${item.name}</h3>
+                <p class="rarity">${item.rarity || "Brak rarity"}</p>
+                <p class="price">$${item.price}</p>
+            </a>
         `;
         container.appendChild(card);
     });

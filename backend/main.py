@@ -88,3 +88,11 @@ def show_skins():
     else:
         data = fetch_items()
         return data[:20]
+
+#Endpoint do podstrony dla danego przedmiotu
+@app.get("/items/{item_id}")
+def get_item(item_id: int, db: Annotated[Session, Depends(get_db)]):
+    item = db.query(models.Item).filter(models.Item.id == item_id).first()
+    if not item:
+        return {"error": "Nie znaleziono skina"}
+    return item

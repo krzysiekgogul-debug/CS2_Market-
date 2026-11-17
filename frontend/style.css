@@ -69,3 +69,24 @@ h1 {
     color: #4caf50;
     margin-top: 15px;
 }
+.back-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: #ffcc00;
+    text-decoration: none;
+}
+
+.card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.item-detail-card {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #2d2d2d;
+    padding: 30px;
+    border-radius: 12px;
+    border: 1px solid #444;
+}
