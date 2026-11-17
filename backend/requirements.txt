@@ -21,7 +21,7 @@ typing_extensions==4.16.0
 uvicorn==0.54.0
 brotli==1.2.1
 httpx==0.28.1
-sqlalchemy
+sqlalchemy==2.1.9
 psycopg2-binary
 psycopg[binary]
 python-dotenv
