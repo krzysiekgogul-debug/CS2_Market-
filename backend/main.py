@@ -1,5 +1,5 @@
 import json
-
+from typing import Annotated
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
@@ -7,6 +7,8 @@ from sqlalchemy.orm import Session
 import models
 from database import Base, engine, get_db
 from search_skins import fetch_items
+
+from typing import Annotated
 
 # Tworzy tabele w bazie (jeśli nie istnieją)
 Base.metadata.create_all(bind=engine)
