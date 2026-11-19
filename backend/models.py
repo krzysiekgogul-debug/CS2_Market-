@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, Float, Integer, String
+from sqlalchemy import Column, DateTime, Float, Integer, String, UniqueConstraint
 from sqlalchemy.sql import func
 
 from database import Base
@@ -9,28 +9,36 @@ class Item(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    # Podstawowe informacje
-    name = Column(String, index=True, nullable=False)  # np. "AK-47 | Redline"
-    market_hash_name = Column(
-        String, index=True, nullable=True
-    )  # pełna nazwa z marketu
-    weapon = Column(String, nullable=True)  # np. "AK-47"
-    rarity = Column(String, nullable=True)  # Classified, Covert itd.
+    # Identyfikacja skina
+    market_hash_name = Column(String, index=True, nullable=False)
+    version = Column(String, nullable=True)  # np. "Ruby", "Phase 2" lub None
+    currency = Column(String, nullable=False, default="PLN")
 
-    # Ceny
-    price = Column(Float, nullable=False)  # aktualna / główna cena
-    min_price = Column(Float, nullable=True)
-    max_price = Column(Float, nullable=True)
+    # Komplet cen ze Skinportu
     suggested_price = Column(Float, nullable=True)
+    min_price = Column(Float, nullable=False, default=0.0)
+    max_price = Column(Float, nullable=False, default=0.0)
+    mean_price = Column(Float, nullable=True)
+    median_price = Column(Float, nullable=True)
 
-    # Dodatkowe dane rynkowe
-    quantity = Column(Integer, nullable=True, default=0)  # ile sztuk na rynku
-    currency = Column(String, nullable=True, default="USD")
-
-    # Linki i obrazek
-    image_url = Column(String, nullable=True)
+    # Dostępność i linki
+    quantity = Column(Integer, nullable=False, default=0)
     item_page = Column(String, nullable=True)
+    market_page = Column(String, nullable=True)
 
-    # Daty
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    # Daty ze Skinportu (kiedy Skinport utworzył i zaktualizował rekord)
+    source_created_at = Column(DateTime(timezone=True), nullable=True)
+    source_updated_at = Column(DateTime(timezone=True), nullable=True)
+
+    # Daty techniczne w Twojej bazie danych
+    db_created_at = Column(DateTime(timezone=True), server_default=func.now())
+    db_updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    __table_args__ = (
+        UniqueConstraint(
+            "market_hash_name",
+            "version",
+            name="uq_item_name_version",
+            postgresql_nulls_not_distinct=True,
+        ),
+    )

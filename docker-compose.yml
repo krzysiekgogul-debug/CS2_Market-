@@ -6,7 +6,7 @@ services:
     volumes:
       - ./backend:/app
     environment:
-      - DATABASE_URL=postgresql://cs2user:cs2password@db:5432/cs2market
+      - DATABASE_URL=postgresql+asyncpg://cs2user:cs2password@db:5432/cs2market
     depends_on:
       db:
         condition: service_healthy
@@ -18,7 +18,7 @@ services:
       POSTGRES_PASSWORD: cs2password
       POSTGRES_DB: cs2market
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
