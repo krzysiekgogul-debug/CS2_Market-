@@ -2,10 +2,12 @@ from fastapi import Depends, FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql.expression import func
 
 import models
 from database import get_db
 from search_skins import lifespan
+
 app = FastAPI(title="CS2 Market API", lifespan=lifespan)
 
 app.add_middleware(
@@ -29,9 +31,23 @@ async def get_skins_from_db(
     if search:
         query = query.where(models.Item.market_hash_name.ilike(f"%{search}%"))
 
-    query = query.order_by(models.Item.min_price.asc()).offset(offset).limit(limit)
+    # Dzieki temu przedmioty beda z randomowymi cenami, a nie tylko najtansze
+    query = query.order_by(func.random()).offset(offset).limit(limit)
+
+    # Sortowanie po cenie minimalnej rosnąco
+    # query = query.order_by(models.Item.min_price.asc()).offset(offset).limit(limit)
+
     result = await db.execute(query)
     return result.scalars().all()
+
+# Endpoint do pobierania pojedynczego skina po jego ID
+@app.get("/items/{item_id}")
+async def get_item(item_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(models.Item).where(models.Item.id == item_id))
+    item = result.scalar_one_or_none()
+    if not item:
+        return {"error": "Nie znaleziono skina"}
+    return item
 
 
 # Endpoint z bazy danych

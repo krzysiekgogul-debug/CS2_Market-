@@ -1,10 +1,13 @@
 import asyncio
+import json
 from contextlib import asynccontextmanager
+from datetime import datetime, timezone
+from pathlib import Path
 import httpx
 from sqlalchemy.dialects.postgresql import insert
 from database import AsyncSessionLocal, Base, engine
 from models import Item
-from datetime import datetime, timezone
+
 
 URL = "https://api.skinport.com/v1/items"
 PARAMS = {"app_id": 730, "currency": "PLN", "tradable": True}
@@ -13,10 +16,21 @@ REFRESH_INTERVAL_SECONDS = 300
 
 
 
-async def fetch_items() -> list[dict]:
-     async with httpx.AsyncClient(headers=HEADERS, timeout=30.0) as client:
-        response = await client.get(URL, params=PARAMS)
+CACHE_FILE = Path("items.json")
+CACHE_MAX_AGE_SECONDS = 300  # 5 minut
 
+async def fetch_items() -> list[dict]:
+    # Sprawdź, czy mamy świeży cache
+    if CACHE_FILE.exists():
+        file_age = asyncio.get_event_loop().time() - CACHE_FILE.stat().st_mtime
+        if file_age < CACHE_MAX_AGE_SECONDS:
+            print("[Cache] Wczytuję dane z pliku items.json")
+            return json.loads(CACHE_FILE.read_text(encoding="utf-8"))
+
+    # Jeśli nie ma cache lub jest stary — pobierz z API
+    print("[API] Pobieram dane ze Skinport...")
+    async with httpx.AsyncClient(headers=HEADERS, timeout=30.0) as client:
+        response = await client.get(URL, params=PARAMS)
         response.raise_for_status()
 
         print("status:", response.status_code)
@@ -24,7 +38,16 @@ async def fetch_items() -> list[dict]:
         print("content-encoding:", response.headers.get("content-encoding"))
         print("czas:", response.elapsed)
 
-        return response.json()
+        data = response.json()
+
+        # Zapisz do cache
+        CACHE_FILE.write_text(
+            json.dumps(data, ensure_ascii=False),
+            encoding="utf-8"
+        )
+        print("[Cache] Zapisano dane do items.json")
+
+        return data
 
 
 async def save_items_to_db(raw_items: list[dict]) -> None:

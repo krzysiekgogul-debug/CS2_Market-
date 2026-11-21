@@ -10,30 +10,17 @@ h1 {
     margin-bottom: 30px;
     color: #ffcc00;
 }
-.controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 30px;
-    flex-wrap: wrap;
-}
-.controls input {
-    padding: 8px 12px;
+#refresh-btn {
+    padding: 10px 20px;
     font-size: 1em;
+    background-color: #ffcc00;
+    color: #1a1a1a;
+    border: none;
     border-radius: 6px;
-    border: 1px solid #555;
-    background-color: #2d2d2d;
-    color: white;
-    width: 250px;
+    cursor: pointer;
 }
-.controls select {
-    padding: 8px 12px;
-    font-size: 1em;
-    border-radius: 6px;
-    border: 1px solid #555;
-    background-color: #2d2d2d;
-    color: white;
+#refresh-btn:hover {
+    background-color: #e6b800;
 }
 #items {
     display: grid;
@@ -75,13 +62,11 @@ h1 {
     color: #ffcc00;
     text-decoration: none;
 }
-
 .card-link {
     text-decoration: none;
     color: inherit;
     display: block;
 }
-
 .item-detail-card {
     max-width: 600px;
     margin: 0 auto;
