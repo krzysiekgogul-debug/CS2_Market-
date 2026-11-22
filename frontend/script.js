@@ -6,6 +6,14 @@ function getImageUrl(marketHashName) {
     return `https://api.steamapis.com/image/item/730/${encodeURIComponent(marketHashName)}`;
 }
 
+function getImageUrl(marketHashName) {
+    if (!marketHashName) {
+        return "https://via.placeholder.com/200x150?text=Brak+obrazka";
+    }
+    // Przykładowe źródło (możesz później zmienić na inne)
+    return `https://api.steamapis.com/image/item/730/${encodeURIComponent(marketHashName)}`;
+}
+
 async function loadItems() {
     const container = document.getElementById("items");
 
@@ -34,6 +42,12 @@ function renderItems(items) {
         card.className = "item-card";
         card.innerHTML = `
             <a href="item.html?id=${item.id}" class="card-link">
+                <img 
+                    src="${getImageUrl(item.market_hash_name)}" 
+                    alt="${item.market_hash_name}" 
+                    class="item-image"
+                    loading="lazy"
+                >
                 <h3>${item.market_hash_name}</h3>
                 <p class="rarity">${item.version || "—"}</p>
                 <p class="price">${item.min_price ?? "—"} ${item.currency || "PLN"}</p>
