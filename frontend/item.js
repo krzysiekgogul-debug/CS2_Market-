@@ -2,12 +2,6 @@ const params = new URLSearchParams(window.location.search);
 const itemId = params.get("id");
 
 function getImageUrl(marketHashName) {
-    if (!marketHashName) return "https://via.placeholder.com/200x150?text=Brak+obrazka";
-    // Przykładowy serwis (może wymagać klucza lub mieć limity)
-    return `https://api.steamapis.com/image/item/730/${encodeURIComponent(marketHashName)}`;
-}
-
-function getImageUrl(marketHashName) {
     if (!marketHashName) {
         return "https://via.placeholder.com/200x150?text=Brak+obrazka";
     }
@@ -32,7 +26,7 @@ async function loadItem() {
         container.innerHTML = `
             <div class="item-detail-card">
                 <h1>${item.market_hash_name}</h1>
-                <img src="${getImageUrl(item.market_hash_name)}" alt="${item.market_hash_name}" class="item-detail-image"loading="lazy">
+                <img src="${getImageUrl(item.market_hash_name)}" alt="${item.market_hash_name}" class="item-detail-image" loading="lazy">
                 <p class="rarity">${item.version || "—"}</p>
                 <p class="price">${item.min_price ?? "—"} ${item.currency || "PLN"}</p>
                 <p><strong>Sugerowana cena:</strong> ${item.suggested_price ?? "—"}</p>

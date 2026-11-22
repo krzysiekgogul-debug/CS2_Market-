@@ -1,12 +1,6 @@
 const API_URL = "http://127.0.0.1:8000/skins_from_db";
 
 function getImageUrl(marketHashName) {
-    if (!marketHashName) return "https://via.placeholder.com/200x150?text=Brak+obrazka";
-    // Przykładowy serwis (może wymagać klucza lub mieć limity)
-    return `https://api.steamapis.com/image/item/730/${encodeURIComponent(marketHashName)}`;
-}
-
-function getImageUrl(marketHashName) {
     if (!marketHashName) {
         return "https://via.placeholder.com/200x150?text=Brak+obrazka";
     }
