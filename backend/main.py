@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import models
 from database import get_db
 from search_skins import lifespan
+
 app = FastAPI(title="CS2 Market API", lifespan=lifespan)
 
 app.add_middleware(
@@ -80,5 +81,3 @@ async def get_skins_from_db(
 #
 #     except Exception as e:
 #         return {"error": str(e)}
-
-

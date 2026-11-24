@@ -1,10 +1,17 @@
 import asyncio
+import logging as log
 from contextlib import asynccontextmanager
+from datetime import UTC, datetime
+
 import httpx
 from sqlalchemy.dialects.postgresql import insert
+
 from database import AsyncSessionLocal, Base, engine
 from models import Item
-from datetime import datetime, timezone
+
+log.basicConfig(level=log.INFO)
+
+logger = log.getLogger(__name__)
 
 URL = "https://api.skinport.com/v1/items"
 PARAMS = {"app_id": 730, "currency": "PLN", "tradable": True}
@@ -12,9 +19,8 @@ HEADERS = {"Accept-Encoding": "br"}
 REFRESH_INTERVAL_SECONDS = 300
 
 
-
 async def fetch_items() -> list[dict]:
-     async with httpx.AsyncClient(headers=HEADERS, timeout=30.0) as client:
+    async with httpx.AsyncClient(headers=HEADERS, timeout=30.0) as client:
         response = await client.get(URL, params=PARAMS)
 
         response.raise_for_status()
@@ -42,8 +48,16 @@ async def save_items_to_db(raw_items: list[dict]) -> None:
 
         raw_min = skin.get("min_price")
         raw_max = skin.get("max_price")
-        min_price = raw_min if raw_min is not None else (raw_max if raw_max is not None else 0.0)
-        max_price = raw_max if raw_max is not None else (raw_min if raw_min is not None else 0.0)
+        min_price = (
+            raw_min
+            if raw_min is not None
+            else (raw_max if raw_max is not None else 0.0)
+        )
+        max_price = (
+            raw_max
+            if raw_max is not None
+            else (raw_min if raw_min is not None else 0.0)
+        )
 
         # Konwersja Unix timestamp ze Skinportu na obiekt datetime
         created_ts = skin.get("created_at")
@@ -61,8 +75,12 @@ async def save_items_to_db(raw_items: list[dict]) -> None:
             "quantity": skin.get("quantity", 0),
             "item_page": skin.get("item_page"),
             "market_page": skin.get("market_page"),
-            "source_created_at": datetime.fromtimestamp(created_ts, tz=timezone.utc) if created_ts else None,
-            "source_updated_at": datetime.fromtimestamp(updated_ts, tz=timezone.utc) if updated_ts else None,
+            "source_created_at": datetime.fromtimestamp(created_ts, tz=UTC)
+            if created_ts
+            else None,
+            "source_updated_at": datetime.fromtimestamp(updated_ts, tz=UTC)
+            if updated_ts
+            else None,
         }
 
     rows = list(unique_items.values())
@@ -105,8 +123,8 @@ async def sync_loop() -> None:
 
         except httpx.HTTPStatusError as e:
             print(f"[Sync] Błąd HTTP ze Skinport: {e.response.status_code}")
-        except Exception as e:
-            print(f"[Sync] Nieoczekiwany błąd podczas synchronizacji: {e}")
+        except Exception:
+            logger.exception("[Sync] Nieoczekiwany błąd podczas synchronizacji")
 
         await asyncio.sleep(REFRESH_INTERVAL_SECONDS)
 
@@ -124,4 +142,3 @@ async def lifespan(app):
 
     sync_task.cancel()
     print("[Lifespan] Zatrzymano zadanie synchronizacji w tle.")
-
