@@ -35,6 +35,7 @@ async def get_skins_from_db(
     return result.scalars().all()
 
 
+# http://localhost:8000/skins_from_db?search=AK-47
 # Endpoint z bazy danych
 # @app.get("/items")
 # def get_items(db: Session = Depends(get_db)):
