@@ -36,12 +36,7 @@ function renderItems(items) {
         card.className = "item-card";
         card.innerHTML = `
             <a href="item.html?id=${item.id}" class="card-link">
-                <img 
-                    src="${getImageUrl(item.market_hash_name)}" 
-                    alt="${item.market_hash_name}" 
-                    class="item-image"
-                    loading="lazy"
-                >
+                <img src="${getImageUrl(item.market_hash_name)}" alt="${item.market_hash_name}" class="item-image" loading="lazy" onerror="this.src='https://via.placeholder.com/200x150?text=Brak+obrazka'">
                 <h3>${item.market_hash_name}</h3>
                 <p class="rarity">${item.version || "—"}</p>
                 <p class="price">${item.min_price ?? "—"} ${item.currency || "PLN"}</p>

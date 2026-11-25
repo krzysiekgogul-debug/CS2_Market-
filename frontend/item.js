@@ -26,7 +26,7 @@ async function loadItem() {
         container.innerHTML = `
             <div class="item-detail-card">
                 <h1>${item.market_hash_name}</h1>
-                <img src="${getImageUrl(item.market_hash_name)}" alt="${item.market_hash_name}" class="item-detail-image" loading="lazy">
+                <img src="${getImageUrl(item.market_hash_name)}" alt="${item.market_hash_name}" class="item-image" loading="lazy" onerror="this.src='https://via.placeholder.com/200x150?text=Brak+obrazka'">
                 <p class="rarity">${item.version || "—"}</p>
                 <p class="price">${item.min_price ?? "—"} ${item.currency || "PLN"}</p>
                 <p><strong>Sugerowana cena:</strong> ${item.suggested_price ?? "—"}</p>
