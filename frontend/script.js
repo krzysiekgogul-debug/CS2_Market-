@@ -1,11 +1,7 @@
 const API_URL = "http://127.0.0.1:8000/skins_from_db";
 
-function getImageUrl(marketHashName) {
-    if (!marketHashName) {
-        return "https://via.placeholder.com/200x150?text=Brak+obrazka";
-    }
-    // Przykładowe źródło (możesz później zmienić na inne)
-    return `https://api.steamapis.com/image/item/730/${encodeURIComponent(marketHashName)}`;
+function getImageUrl(item) {
+    return item.image_url || "https://via.placeholder.com/200x150?text=Brak+obrazka";
 }
 
 async function loadItems() {
@@ -36,7 +32,7 @@ function renderItems(items) {
         card.className = "item-card";
         card.innerHTML = `
             <a href="item.html?id=${item.id}" class="card-link">
-                <img src="${getImageUrl(item.market_hash_name)}" alt="${item.market_hash_name}" class="item-image" loading="lazy" onerror="this.src='https://via.placeholder.com/200x150?text=Brak+obrazka'">
+                <img src="${getImageUrl(item)}" alt="${item.market_hash_name}" class="item-image" loading="lazy" onerror="this.src='https://via.placeholder.com/200x150?text=Brak+obrazka'">
                 <h3>${item.market_hash_name}</h3>
                 <p class="rarity">${item.version || "—"}</p>
                 <p class="price">${item.min_price ?? "—"} ${item.currency || "PLN"}</p>
