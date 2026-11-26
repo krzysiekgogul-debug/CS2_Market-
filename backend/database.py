@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from sqlalchemy.orm import declarative_base
 
 DATABASE_URL = os.getenv(
-    "DATABASE_URL", "postgresql+asyncpg://cs2user:cs2password@db:5432/cs2market"
+    "DATABASE_URL", "postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}:5432/${POSTGRES_DB}"
 )
 
 # 1. Asynchroniczny silnik zamiast zwykłego create_engine
