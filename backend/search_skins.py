@@ -75,7 +75,6 @@ async def save_items_to_db(raw_items: list[dict]) -> None:
             "quantity": skin.get("quantity", 0),
             "item_page": skin.get("item_page"),
             "market_page": skin.get("market_page"),
-            "image_url": f"https://api.steamapis.com/image/item/730/{hash_name}",
             "source_created_at": datetime.fromtimestamp(created_ts, tz=UTC)
             if created_ts
             else None,

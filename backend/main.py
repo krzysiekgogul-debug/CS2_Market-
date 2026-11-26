@@ -43,53 +43,7 @@ async def get_skins_from_db(
     return result.scalars().all()
 
 
-# Endpoint do wyszukiwania skina po nazwie lub jej fragmencie
-@app.get("/items/search")
-async def search_item(
-    db: Annotated[AsyncSession, Depends(get_db)],
-    name: str = Query(..., description="Nazwa skina lub jej fragment"),
-):
-    query = (
-        select(models.Item)
-        .where(models.Item.market_hash_name.ilike(f"%{name}%"))
-        .limit(1)
-    )
-
-    result = await db.execute(query)
-    item = result.scalar_one_or_none()
-
-    if not item:
-        return {"error": "Nie znaleziono skina"}
-
-    return item
-
-
-@app.get("/items/suggestions")
-async def get_suggestions(
-    db: Annotated[AsyncSession, Depends(get_db)],
-    q: str = Query(..., min_length=2),
-):
-    query = (
-        select(models.Item.market_hash_name)
-        .where(models.Item.market_hash_name.ilike(f"%{q}%"))
-        .limit(10)
-    )
-
-    result = await db.execute(query)
-    names = result.scalars().all()
-    return names
-
-
-# Endpoint do pobierania pojedynczego skina po jego ID
-@app.get("/items/{item_id}")
-async def get_item(item_id: int, db: Annotated[AsyncSession, Depends(get_db)]):
-    result = await db.execute(select(models.Item).where(models.Item.id == item_id))
-    item = result.scalar_one_or_none()
-    if not item:
-        return {"error": "Nie znaleziono skina"}
-    return item
-
-
+# http://localhost:8000/skins_from_db?search=AK-47
 # Endpoint z bazy danych
 # @app.get("/items")
 # def get_items(db: Session = Depends(get_db)):
