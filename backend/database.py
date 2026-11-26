@@ -3,9 +3,9 @@ import os
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import declarative_base
 
-DATABASE_URL = os.getenv(
-    "DATABASE_URL", "postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}:5432/${POSTGRES_DB}"
-)
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise RuntimeError("Brak zmiennej środowiskowej DATABASE_URL")
 
 # 1. Asynchroniczny silnik zamiast zwykłego create_engine
 engine = create_async_engine(DATABASE_URL)
