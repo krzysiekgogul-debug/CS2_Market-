@@ -18,7 +18,7 @@ jobs:
         env:
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_DB: cs2market_test
         ports:
           - 15432:5432
         options: >-
@@ -43,7 +43,7 @@ jobs:
         with:
           python-version: "3.13"
           cache: pip
-          cache-dependency-path: backend/test/requirements-dev.txt
+          cache-dependency-path: backend/tests/requirements-dev.txt
 
       - name: Install dependencies
         run: pip install -r tests/requirements-dev.txt
@@ -55,4 +55,7 @@ jobs:
         run: ruff format --check .
 
       - name: Tests
+        env:
+          DATABASE_URL: postgresql+asyncpg://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:15432/cs2market_test
+          TEST_DB_URL: postgresql+asyncpg://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:15432/cs2market_test
         run: pytest
