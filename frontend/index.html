@@ -9,7 +9,8 @@
 <body>
     <h1>CS2 Market</h1>
 
-    <div class="controls">
+<!-- Filtrowanie przedmiotów w frontend (bedzie realizowane w backend) -->
+    <!-- <div class="controls">
     <input type="text" id="search" placeholder="Szukaj skina...">
     <label for="sort">Sortuj według:</label>
     <select id="sort">
@@ -18,8 +19,18 @@
         <option value="price-asc">Cena (rosnąco)</option>
         <option value="price-desc">Cena (malejąco)</option>
     </select>
+    </div> -->
+
+    <div id="refresh-button">
+        <button id="refresh-btn">Odśwież dane</button>
     </div>
 
+    <div id="search-container">
+        <input type="text" id="item-search" placeholder="Wpisz nazwę skina..." autocomplete="off">
+        <button id="search-btn">Szukaj</button>
+        <div id="suggestions"></div>
+    </div>
+    
     <div id="items">
         Ładowanie skinów...
     </div>

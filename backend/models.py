@@ -25,6 +25,7 @@ class Item(Base):
     quantity = Column(Integer, nullable=False, default=0)
     item_page = Column(String, nullable=True)
     market_page = Column(String, nullable=True)
+    image_url = Column(String, nullable=True)
 
     # Daty ze Skinportu (kiedy Skinport utworzył i zaktualizował rekord)
     source_created_at = Column(DateTime(timezone=True), nullable=True)
