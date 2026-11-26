@@ -1,4 +1,6 @@
 const API_URL = "http://127.0.0.1:8000/skins_from_db";
+const searchInput = document.getElementById("item-search");
+const suggestionsBox = document.getElementById("suggestions");
 
 function getImageUrl(item) {
     return item.image_url || "https://via.placeholder.com/200x150?text=Brak+obrazka";
@@ -46,4 +48,50 @@ loadItems();
 
 document.getElementById("refresh-btn").addEventListener("click", () => {
     loadItems();
+});
+
+searchInput.addEventListener("input", async () => {
+    const query = searchInput.value.trim();
+    suggestionsBox.innerHTML = "";
+
+    if (query.length < 2) return;
+
+    try {
+        const response = await fetch(`http://127.0.0.1:8000/items/suggestions?q=${encodeURIComponent(query)}`);
+        const suggestions = await response.json();
+
+        suggestions.forEach(name => {
+            const div = document.createElement("div");
+            div.textContent = name;
+            div.style.padding = "8px";
+            div.style.cursor = "pointer";
+            div.style.color = "#ffcc00";
+            div.addEventListener("click", () => {
+                searchInput.value = name;
+                suggestionsBox.innerHTML = "";
+            });
+            suggestionsBox.appendChild(div);
+        });
+    } catch (error) {
+        console.error("Błąd podpowiedzi");
+    }
+});
+
+document.getElementById("search-btn").addEventListener("click", async () => {
+    const name = document.getElementById("item-search").value.trim();
+    if (!name) return;
+
+    try {
+        const response = await fetch(`http://127.0.0.1:8000/items/search?name=${encodeURIComponent(name)}`);
+        const data = await response.json();
+
+        if (data.error) {
+            alert("Nie znaleziono skina");
+            return;
+        }
+
+        window.location.href = `item.html?id=${data.id}`;
+    } catch (error) {
+        alert("Błąd wyszukiwania");
+    }
 });
