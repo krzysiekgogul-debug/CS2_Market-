@@ -11,11 +11,28 @@ jobs:
     # GitHub stawia czystą maszynę z Ubuntu
     runs-on: ubuntu-latest
 
+#    dodanie bazy danych przed skryptami do ci
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: cs2market_test
+        ports:
+          - 15432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     # wszystkie polecenia "run" wykonują się w tym folderze
     # (u Ciebie nazwa musi się zgadzać z folderem w repo, czyli teraz "beckend")
     defaults:
       run:
         working-directory: backend
+
+
 
     steps:
       # pobiera kod z repo na maszynę
@@ -26,10 +43,10 @@ jobs:
         with:
           python-version: "3.13"
           cache: pip
-          cache-dependency-path: backend/requirements-dev.txt
+          cache-dependency-path: backend/tests/requirements-dev.txt
 
       - name: Install dependencies
-        run: pip install -r requirements-dev.txt
+        run: pip install -r tests/requirements-dev.txt
 
       - name: Lint
         run: ruff check .
@@ -38,4 +55,7 @@ jobs:
         run: ruff format --check .
 
       - name: Tests
+        env:
+          DATABASE_URL: postgresql+asyncpg://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:15432/cs2market_test
+          TEST_DB_URL: postgresql+asyncpg://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:15432/cs2market_test
         run: pytest
