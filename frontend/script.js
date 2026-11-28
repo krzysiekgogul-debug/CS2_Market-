@@ -1,10 +1,5 @@
-const API_URL = "http://127.0.0.1:8000/skins_from_db";
-const searchInput = document.getElementById("item-search");
-const suggestionsBox = document.getElementById("suggestions");
-
-function getImageUrl(item) {
-    return item.image_url || "https://via.placeholder.com/200x150?text=Brak+obrazka";
-}
+const API_URL = "http://127.0.0.1:8000/items";
+let allItems = [];
 
 async function loadItems() {
     const container = document.getElementById("items");
@@ -13,8 +8,8 @@ async function loadItems() {
         const response = await fetch(API_URL);
         if (!response.ok) throw new Error("Nie udało się pobrać danych");
 
-        const items = await response.json();
-        renderItems(items);
+        allItems = await response.json();
+        applyFilters();
     } catch (error) {
         container.innerHTML = `<p style="color: #ff6b6b;">Błąd: ${error.message}</p>`;
     }
@@ -25,7 +20,7 @@ function renderItems(items) {
     container.innerHTML = "";
 
     if (items.length === 0) {
-        container.innerHTML = "<p>Brak skinów.</p>";
+        container.innerHTML = "<p>Brak skinów pasujących do wyszukiwania.</p>";
         return;
     }
 
@@ -34,64 +29,42 @@ function renderItems(items) {
         card.className = "item-card";
         card.innerHTML = `
             <a href="item.html?id=${item.id}" class="card-link">
-                <img src="${getImageUrl(item)}" alt="${item.market_hash_name}" class="item-image" loading="lazy" onerror="this.src='https://via.placeholder.com/200x150?text=Brak+obrazka'">
-                <h3>${item.market_hash_name}</h3>
-                <p class="rarity">${item.version || "—"}</p>
-                <p class="price">${item.min_price ?? "—"} ${item.currency || "PLN"}</p>
+                <h3>${item.name}</h3>
+                <p class="rarity">${item.rarity || "Brak rarity"}</p>
+                <p class="price">$${item.price}</p>
             </a>
         `;
         container.appendChild(card);
     });
 }
 
+function applyFilters() {
+    const searchTerm = document.getElementById("search").value.toLowerCase();
+    const sortCriteria = document.getElementById("sort").value;
+
+    let filtered = allItems.filter(item =>
+        item.name.toLowerCase().includes(searchTerm)
+    );
+
+    switch (sortCriteria) {
+        case "name-asc":
+            filtered.sort((a, b) => a.name.localeCompare(b.name));
+            break;
+        case "name-desc":
+            filtered.sort((a, b) => b.name.localeCompare(a.name));
+            break;
+        case "price-asc":
+            filtered.sort((a, b) => a.price - b.price);
+            break;
+        case "price-desc":
+            filtered.sort((a, b) => b.price - a.price);
+            break;
+    }
+
+    renderItems(filtered);
+}
+
+document.getElementById("search").addEventListener("input", applyFilters);
+document.getElementById("sort").addEventListener("change", applyFilters);
+
 loadItems();
-
-document.getElementById("refresh-btn").addEventListener("click", () => {
-    loadItems();
-});
-
-searchInput.addEventListener("input", async () => {
-    const query = searchInput.value.trim();
-    suggestionsBox.innerHTML = "";
-
-    if (query.length < 2) return;
-
-    try {
-        const response = await fetch(`http://127.0.0.1:8000/items/suggestions?q=${encodeURIComponent(query)}`);
-        const suggestions = await response.json();
-
-        suggestions.forEach(name => {
-            const div = document.createElement("div");
-            div.textContent = name;
-            div.style.padding = "8px";
-            div.style.cursor = "pointer";
-            div.style.color = "#ffcc00";
-            div.addEventListener("click", () => {
-                searchInput.value = name;
-                suggestionsBox.innerHTML = "";
-            });
-            suggestionsBox.appendChild(div);
-        });
-    } catch (error) {
-        console.error("Błąd podpowiedzi");
-    }
-});
-
-document.getElementById("search-btn").addEventListener("click", async () => {
-    const name = document.getElementById("item-search").value.trim();
-    if (!name) return;
-
-    try {
-        const response = await fetch(`http://127.0.0.1:8000/items/search?name=${encodeURIComponent(name)}`);
-        const data = await response.json();
-
-        if (data.error) {
-            alert("Nie znaleziono skina");
-            return;
-        }
-
-        window.location.href = `item.html?id=${data.id}`;
-    } catch (error) {
-        alert("Błąd wyszukiwania");
-    }
-});

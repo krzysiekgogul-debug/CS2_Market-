@@ -1,10 +1,6 @@
 const params = new URLSearchParams(window.location.search);
 const itemId = params.get("id");
 
-function getImageUrl(item) {
-    return item.image_url || "https://via.placeholder.com/200x150?text=Brak+obrazka";
-}
-
 async function loadItem() {
     const container = document.getElementById("item-details");
 
@@ -21,19 +17,14 @@ async function loadItem() {
 
         container.innerHTML = `
             <div class="item-detail-card">
-                <h1>${item.market_hash_name}</h1>
-                <img src="${getImageUrl(item)}" alt="${item.market_hash_name}" class="item-detail-image" loading="lazy" onerror="this.src='https://via.placeholder.com/200x150?text=Brak+obrazka'">
-                <p class="rarity">${item.version || "—"}</p>
-                <p class="price">${item.min_price ?? "—"} ${item.currency || "PLN"}</p>
-                <p><strong>Sugerowana cena:</strong> ${item.suggested_price ?? "—"}</p>
+                <h1>${item.name}</h1>
+                <p class="rarity">${item.rarity || "Brak rarity"}</p>
+                <p class="price">$${item.price}</p>
                 <p><strong>Min. cena:</strong> ${item.min_price ?? "—"}</p>
                 <p><strong>Max. cena:</strong> ${item.max_price ?? "—"}</p>
-                <p><strong>Średnia cena:</strong> ${item.mean_price ?? "—"}</p>
-                <p><strong>Mediana:</strong> ${item.median_price ?? "—"}</p>
                 <p><strong>Ilość:</strong> ${item.quantity ?? "—"}</p>
                 <p><strong>Waluta:</strong> ${item.currency || "—"}</p>
                 ${item.item_page ? `<p><a href="${item.item_page}" target="_blank">Zobacz na Skinport</a></p>` : ""}
-                ${item.market_page ? `<p><a href="${item.market_page}" target="_blank">Strona marketu</a></p>` : ""}
             </div>
         `;
     } catch (error) {

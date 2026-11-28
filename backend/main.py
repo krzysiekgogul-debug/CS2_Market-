@@ -1,10 +1,7 @@
-from typing import Annotated
-
 from fastapi import Depends, FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.sql.expression import func
 
 import models
 from database import get_db
@@ -23,22 +20,17 @@ app.add_middleware(
 
 @app.get("/skins_from_db")
 async def get_skins_from_db(
-    db: Annotated[AsyncSession, Depends(get_db)],
-    search: str | None = Query(None, description="Fragment nazwy skina"),
+    search: str | None = Query(None, description="Fragment nazwy skina, np. AK-47"),
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
+    db: AsyncSession = Depends(get_db),
 ):
     query = select(models.Item).where(models.Item.quantity > 0)
 
     if search:
         query = query.where(models.Item.market_hash_name.ilike(f"%{search}%"))
 
-    # Dzieki temu przedmioty beda z randomowymi cenami, a nie tylko najtansze
-    query = query.order_by(func.random()).offset(offset).limit(limit)
-
-    # Sortowanie po cenie minimalnej rosnąco
-    # query = query.order_by(models.Item.min_price.asc()).offset(offset).limit(limit)
-
+    query = query.order_by(models.Item.min_price.asc()).offset(offset).limit(limit)
     result = await db.execute(query)
     return result.scalars().all()
 
